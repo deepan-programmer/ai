@@ -131,5 +131,3 @@ The updated code includes a specialized threaded VideoCapture class for RTSP str
 ## Error Handling
 The system includes comprehensive error handling and logging to ensure reliable operation even in edge cases. The RTSP implementation has additional error recovery mechanisms for network disruptions.
 
-## License
-[Developed & Managed By: Prakash Pacharne]
