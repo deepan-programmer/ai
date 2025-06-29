@@ -12,7 +12,7 @@
 "log_file_path" : "assets/rtsp_detection.log",
 "pretrained_model_pt_path" : "assets/yolov9t.pt",
 "pretrained_model_onnx_path" : "assets/yolov9t.onnx",
-"rtsp_link" : "rtsp://admin:admin123@192.168.1.111:554//Streaming//Channel//101",
+"rtsp_link" : "rtsp://your_username:your_password@your_camera_ip:554/your_stream_path",
 "inference_video" : "assets/sleeping.webm",
 "roi_points" : "assets/roi_points.txt",
 "verbose_history" : 0,
