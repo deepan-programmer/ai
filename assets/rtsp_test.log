@@ -1,0 +1,8 @@
+2025-06-29 10:35:20,817 - INFO - [<module>:170] - Starting RTSP functionality test...
+2025-06-29 10:35:20,817 - INFO - [test_rtsp_connection:34] - ================================================================================
+2025-06-29 10:35:20,817 - INFO - [test_rtsp_connection:35] - RTSP Connection Test Starting
+2025-06-29 10:35:20,817 - INFO - [test_rtsp_connection:36] - Testing RTSP URL: rtsp://admin:admin123@192.168.1.111:554//Streaming//Channel//101
+2025-06-29 10:35:20,817 - INFO - [test_rtsp_connection:37] - ================================================================================
+2025-06-29 10:35:20,817 - INFO - [test_rtsp_connection:40] - Initializing enhanced RTSP VideoCapture...
+2025-06-29 10:35:20,818 - INFO - [_configure_rtsp_settings:48] - RTSP settings configured successfully
+2025-06-29 10:35:20,818 - INFO - [_connect:58] - Attempting to connect to RTSP stream: rtsp://admin:admin123@192.168.1.111:554//Streaming//Channel//101

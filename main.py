@@ -33,6 +33,12 @@ try:
     resize_width =  int(data['resize_width'])
     resize_height = int(data['resize_height'])
     normalize_frames = data['normalize_frames'] == 'True'
+    
+    # RTSP specific configurations
+    rtsp_reconnect_attempts = int(data.get('rtsp_reconnect_attempts', 5))
+    rtsp_reconnect_delay = float(data.get('rtsp_reconnect_delay', 2.0))
+    rtsp_buffer_size = int(data.get('rtsp_buffer_size', 1))
+    rtsp_timeout = int(data.get('rtsp_timeout', 30))
 
     default_roi_points = [(100, 100), (540, 100), (540, 380), (100, 380)]
     
@@ -41,14 +47,26 @@ except Exception as e:
     sys.exit(1)
 
 try:
+    # Enhanced logging configuration for RTSP monitoring
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
+        format='%(asctime)s - %(levelname)s - [%(funcName)s:%(lineno)d] - %(message)s',
         handlers=[
-            logging.FileHandler(log_file_path),
+            logging.FileHandler(log_file_path, mode='a'),
             logging.StreamHandler()
         ]
     )
+    
+    # Log system startup information
+    logging.info("="*80)
+    logging.info("RTSP AI Detection System Starting")
+    logging.info(f"Project: {project_name}")
+    logging.info(f"Author: {author_name}")
+    logging.info(f"Mode: {mode}")
+    logging.info(f"RTSP URL: {rtsp_link}")
+    logging.info(f"Log file: {log_file_path}")
+    logging.info("="*80)
+    
 except Exception as e:
     print(f"Warning: Could not configure logging: {e}")
 
@@ -167,8 +185,21 @@ def main():
                 cap = cv2.VideoCapture(video_path)
                 logging.info(f"Inferencing on video: {video_path}")
             elif mode.lower() == "rtsp":
-                cap = VideoCapture(rtsp_link)
-                logging.info(f"Inferencing on RTSP stream: {rtsp_link}")
+                logging.info(f"Initializing RTSP connection with parameters:")
+                logging.info(f"  - URL: {rtsp_link}")
+                logging.info(f"  - Reconnect attempts: {rtsp_reconnect_attempts}")
+                logging.info(f"  - Reconnect delay: {rtsp_reconnect_delay}s")
+                logging.info(f"  - Buffer size: {rtsp_buffer_size}")
+                logging.info(f"  - Timeout: {rtsp_timeout}s")
+                
+                cap = VideoCapture(
+                    rtsp_link, 
+                    max_reconnect_attempts=rtsp_reconnect_attempts,
+                    reconnect_delay=rtsp_reconnect_delay,
+                    buffer_size=rtsp_buffer_size,
+                    timeout=rtsp_timeout
+                )
+                logging.info(f"RTSP VideoCapture initialized successfully")
             else:
                 cap = cv2.VideoCapture(0)
                 logging.info("Using OpenCV's VideoCapture with webcam")
@@ -196,21 +227,46 @@ def main():
         person_idle_times = {}
         last_positions = {}
         start_time = time.time()
+        frame_count = 0
+        last_log_time = time.time()
+        log_interval = 30  # Log status every 30 seconds
         
         logging.info(f"Frame resizing enabled: {resize_width}x{resize_height}")
         logging.info(f"Frame normalization enabled: {normalize_frames}")
+        logging.info("Starting main detection loop...")
         
         while True:
             try:
                 if mode.lower() == "rtsp":
                     frame = cap.read()
                     ret = frame is not None
+                    
+                    # Check RTSP stream status periodically
+                    current_time = time.time()
+                    if current_time - last_log_time > log_interval:
+                        if hasattr(cap, 'is_stream_active') and hasattr(cap, 'get_stream_info'):
+                            stream_active = cap.is_stream_active()
+                            stream_info = cap.get_stream_info()
+                            
+                            logging.info(f"RTSP Status - Active: {stream_active}, Frames processed: {frame_count}")
+                            if stream_info:
+                                logging.info(f"Stream Info - FPS: {stream_info.get('fps', 'N/A')}, "
+                                           f"Resolution: {stream_info.get('width', 'N/A')}x{stream_info.get('height', 'N/A')}, "
+                                           f"Reconnects: {stream_info.get('reconnect_count', 'N/A')}")
+                        last_log_time = current_time
                 else:
                     ret, frame = cap.read()
                     
-                if not ret:
-                    logging.warning("Could not read frame. Exiting...")
-                    break
+                if not ret or frame is None:
+                    if mode.lower() == "rtsp":
+                        logging.warning("No frame received from RTSP stream, continuing...")
+                        time.sleep(0.1)
+                        continue
+                    else:
+                        logging.warning("Could not read frame. Exiting...")
+                        break
+                
+                frame_count += 1
 
                 try:
                     original_frame = frame.copy()
@@ -360,8 +416,20 @@ def main():
                                         try:
                                             cv2.putText(display_frame, alert_text, (x1, y1-50), 
                                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+                                            # Log idle detection with detailed information
+                                            logging.warning(f"IDLE PERSON DETECTED - ID: {track_id}, "
+                                                          f"Position: ({center_x}, {center_y}), "
+                                                          f"Idle time: {idle_time:.1f}s, "
+                                                          f"Frame: {frame_count}")
                                         except Exception as e:
                                             logging.error(f"Error adding alert text: {e}")
+                                    
+                                    # Log person movement status periodically
+                                    if frame_count % 300 == 0:  # Every ~10 seconds at 30fps
+                                        logging.info(f"Person {track_id} - Status: {'IDLE' if idle_status else 'Moving'}, "
+                                                   f"Position: ({center_x}, {center_y}), "
+                                                   f"Movement: {movement:.1f}px")
+                                        
                                 except Exception as e:
                                     logging.error(f"Error processing detection: {e}")
                     except Exception as e:
@@ -419,8 +487,18 @@ def main():
 
         try:
             logging.info("Cleaning up resources")
-            cap.release()
+            if mode.lower() == "rtsp" and hasattr(cap, 'release'):
+                cap.release()
+                logging.info("RTSP stream resources released")
+            elif hasattr(cap, 'release'):
+                cap.release()
+                logging.info("Video capture resources released")
             cv2.destroyAllWindows()
+            logging.info("OpenCV windows destroyed")
+            logging.info(f"Total frames processed: {frame_count}")
+            logging.info("="*80)
+            logging.info("RTSP AI Detection System Shutdown Complete")
+            logging.info("="*80)
         except Exception as e:
             logging.error(f"Error during cleanup: {e}")
             

@@ -1,0 +1,38 @@
+2024-06-29 10:30:00,123 - INFO - [main:62] - ================================================================================
+2024-06-29 10:30:00,124 - INFO - [main:63] - RTSP AI Detection System Starting
+2024-06-29 10:30:00,125 - INFO - [main:64] - Project: RTSP AI Detection System
+2024-06-29 10:30:00,126 - INFO - [main:65] - Author: Prakash pacharne
+2024-06-29 10:30:00,127 - INFO - [main:66] - Mode: rtsp
+2024-06-29 10:30:00,128 - INFO - [main:67] - RTSP URL: rtsp://admin:admin123@192.168.1.111:554//Streaming//Channel//101
+2024-06-29 10:30:00,129 - INFO - [main:68] - Log file: assets/rtsp_detection.log
+2024-06-29 10:30:00,130 - INFO - [main:69] - ================================================================================
+2024-06-29 10:30:00,135 - INFO - [main:188] - Initializing RTSP connection with parameters:
+2024-06-29 10:30:00,136 - INFO - [main:189] -   - URL: rtsp://admin:admin123@192.168.1.111:554//Streaming//Channel//101
+2024-06-29 10:30:00,137 - INFO - [main:190] -   - Reconnect attempts: 5
+2024-06-29 10:30:00,138 - INFO - [main:191] -   - Reconnect delay: 2.0s
+2024-06-29 10:30:00,139 - INFO - [main:192] -   - Buffer size: 1
+2024-06-29 10:30:00,140 - INFO - [main:193] -   - Timeout: 30s
+2024-06-29 10:30:00,145 - INFO - [videocaptureclass:48] - RTSP settings configured successfully
+2024-06-29 10:30:00,150 - INFO - [videocaptureclass:58] - Attempting to connect to RTSP stream: rtsp://admin:admin123@192.168.1.111:554//Streaming//Channel//101
+2024-06-29 10:30:02,234 - INFO - [videocaptureclass:65] - RTSP connection established successfully
+2024-06-29 10:30:02,235 - INFO - [videocaptureclass:71] - Stream properties - FPS: 25.0, Resolution: 1920x1080
+2024-06-29 10:30:02,236 - INFO - [videocaptureclass:34] - RTSP VideoCapture initialized for: rtsp://admin:admin123@192.168.1.111:554//Streaming//Channel//101
+2024-06-29 10:30:02,240 - INFO - [main:202] - RTSP VideoCapture initialized successfully
+2024-06-29 10:30:02,245 - INFO - [main:218] - YOLO model loaded successfully from ONNX
+2024-06-29 10:30:02,250 - INFO - [main:234] - Frame resizing enabled: 640x640
+2024-06-29 10:30:02,251 - INFO - [main:235] - Frame normalization enabled: True
+2024-06-29 10:30:02,252 - INFO - [main:236] - Starting main detection loop...
+2024-06-29 10:30:05,123 - INFO - [main:251] - RTSP Status - Active: True, Frames processed: 75
+2024-06-29 10:30:05,124 - INFO - [main:253] - Stream Info - FPS: 25.0, Resolution: 1920x1080, Reconnects: 0
+2024-06-29 10:30:12,456 - INFO - [main:429] - Person 1 - Status: Moving, Position: (320, 240), Movement: 15.2px
+2024-06-29 10:30:15,789 - WARNING - [main:420] - IDLE PERSON DETECTED - ID: 1, Position: (320, 240), Idle time: 12.5s, Frame: 375
+2024-06-29 10:30:22,123 - INFO - [main:429] - Person 1 - Status: IDLE, Position: (322, 242), Movement: 2.1px
+2024-06-29 10:30:35,456 - INFO - [main:251] - RTSP Status - Active: True, Frames processed: 825
+2024-06-29 10:30:35,457 - INFO - [main:253] - Stream Info - FPS: 25.0, Resolution: 1920x1080, Reconnects: 0
+2024-06-29 10:30:42,789 - INFO - [main:429] - Person 1 - Status: Moving, Position: (350, 260), Movement: 28.3px
+2024-06-29 10:31:05,123 - INFO - [main:251] - RTSP Status - Active: True, Frames processed: 1575
+2024-06-29 10:31:05,124 - INFO - [main:253] - Stream Info - FPS: 25.0, Resolution: 1920x1080, Reconnects: 0
+2024-06-29 10:31:12,456 - INFO - [main:429] - Person 2 - Status: Moving, Position: (480, 360), Movement: 22.7px
+2024-06-29 10:31:18,789 - WARNING - [main:420] - IDLE PERSON DETECTED - ID: 2, Position: (482, 362), Idle time: 11.2s, Frame: 1900
+2024-06-29 10:31:35,123 - INFO - [main:251] - RTSP Status - Active: True, Frames processed: 2325
+2024-06-29 10:31:35,124 - INFO - [main:253] - Stream Info - FPS: 25.0, Resolution: 1920x1080, Reconnects: 0
